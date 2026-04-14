@@ -13,10 +13,11 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       <body>
         <Layout
           pageMap={pageMap}
-          navbar={<Navbar logo={<b> Lower Your Bloor Pressure </b>} />}
+          editLink={false}
+          feedback={{ content: null }}
+          navbar={<Navbar logo={<b> Mindful Heart Health </b>} />}
           footer={<Footer />}
-          docsRepositoryBase="https://github.com/shuding/nextra"
-        >
+          docsRepositoryBase="https://github.com/shuding/nextra">
           {children}
         </Layout>
       </body>
