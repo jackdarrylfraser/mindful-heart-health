@@ -1,4 +1,4 @@
-# Project Title
+# Mindful Heart Health
 A community to focus on mindful heart health.
 
 ## ℹ️ Overview
@@ -12,7 +12,7 @@ It's really easy (and often pleasurable) to eat food and do activities that aren
 ## 📦 Installation
 Step-by-step instructions to get a development environment running locally:
 
-1. Clone the repo: `git clone https://github.com`
+1. Clone the repo: `git clone https://github.com/jackdarrylfraser/mindful-heart-health`
 2. Install dependencies: `bun install`
 3. Set up your environment variables in a `.env` file.
 4. Run the app: `bun run start`.
