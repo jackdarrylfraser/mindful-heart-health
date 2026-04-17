@@ -9,6 +9,12 @@ const withNextra = nextra({
 const nextConfig: NextConfig = {
   // Standard Next.js options
   reactStrictMode: true,
+   turbopack: {
+   resolveAlias: {
+     // Path to your `mdx-components` file with extension
+     'next-mdx-import-source-file': './mdx-components.tsx'
+   }
+ }
 }
 
 export default withNextra(nextConfig)
