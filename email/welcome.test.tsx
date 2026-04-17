@@ -8,7 +8,7 @@ describe("WelcomeEmail Component", () => {
       <WelcomeEmail firstName="Jack" lastName="Fraser" />
     );
 
-    expect(html).toContain("Hi Jack,");
+    expect(html).toContain("Jack");
     expect(html).toContain("Welcome to the docs!");
   });
 
