@@ -1,7 +1,7 @@
 import { describe, it, expect } from "bun:test";
-import { auth } from "./auth";
+import { auth } from "@/service/database/auth";
 
-describe("Better Auth Integration", () => {
+describe("Better Auth Adapter Integration", () => {
   it("should be initialized with the correct API structure", () => {
     expect(auth).toBeDefined();
     expect(auth.api).toBeDefined();

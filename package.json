@@ -14,14 +14,18 @@
   "dependencies": {
     "@better-auth/drizzle-adapter": "^1.6.5",
     "@neondatabase/serverless": "^1.0.2",
+    "@react-email/components": "^1.0.12",
+    "@react-email/render": "^2.0.7",
     "@types/mdx": "^2.0.13",
     "better-auth": "^1.6.5",
     "drizzle-orm": "^0.45.2",
+    "drizzle-seed": "^0.3.1",
     "next": "^16.1.6",
     "nextra": "^4.6.1",
     "nextra-theme-docs": "^4.6.1",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "resend": "^6.12.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

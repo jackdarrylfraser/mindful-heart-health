@@ -5,8 +5,8 @@ if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL is not defined in environment variables');
 }
 
- const neonSql = neon(process.env.DATABASE_URL);
- const drizzleDb = drizzle(neonSql, { });
+ const neonQueryFunction = neon(process.env.DATABASE_URL);
+ const database = drizzle(neonQueryFunction, {});
 
- export { neonSql, drizzleDb };
+ export { database };
 
