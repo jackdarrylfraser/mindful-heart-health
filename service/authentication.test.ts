@@ -1,11 +1,11 @@
 import { describe, it, expect } from "bun:test";
-import { auth } from "@/service/database/auth";
+import { authentication } from "@/service/authentication";
 
 describe("Better Auth Adapter Integration", () => {
   it("should be initialized with the correct API structure", () => {
-    expect(auth).toBeDefined();
-    expect(auth.api).toBeDefined();
-    expect(typeof auth.handler).toBe("function");
+    expect(authentication).toBeDefined();
+    expect(authentication.api).toBeDefined();
+    expect(typeof authentication.handler).toBe("function");
   });
 
   it("should successfully connect to the database via the Drizzle adapter", async () => {
@@ -14,7 +14,7 @@ describe("Better Auth Adapter Integration", () => {
     // If the configuration is correct (adapter, database connection, and schema),
     // it will return null (no session found) rather than throwing an error.
     try {
-      const result = await auth.api.getSession({
+      const result = await authentication.api.getSession({
         headers: new Headers(),
       });
       expect(result).toBeNull();
