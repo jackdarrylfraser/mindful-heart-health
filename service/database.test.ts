@@ -1,5 +1,5 @@
 import { describe, it, expect } from "bun:test"; 
-import sql from './db';
+import sql from './database';
 
 describe('Database Connection Integration Test', () => {
   it('should successfully connect to the database and execute a simple query', async () => {
