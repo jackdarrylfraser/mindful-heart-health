@@ -1,11 +1,23 @@
 import { describe, it, expect } from "bun:test"; 
-import sql from './database';
+import { neonSql, drizzleDb } from "./database";
+import { sql } from "drizzle-orm";
 
-describe('Database Connection Integration Test', () => {
+describe("Drizzle ORM Integration", () => {
+  it("should successfully execute a query using the drizzle instance", async () => {
+    // Using a raw SQL fragment through Drizzle to verify connection 
+    // without requiring the 'users' table to be migrated yet.
+    const result = await drizzleDb.execute(sql`SELECT 1 as health_check`);
+
+    expect(result).toBeDefined();
+    expect(result.rows[0].health_check).toBe(1);
+  });
+});
+
+describe('DB Connection Integration Test', () => {
   it('should successfully connect to the database and execute a simple query', async () => {
     try {
       // Execute a simple query to verify connection and basic functionality
-      const result = await sql`SELECT 1 as connection_test`;
+      const result = await neonSql`SELECT 1 as connection_test`;
       
       // Assert that the result is what we expect
       expect(result).toBeDefined();
@@ -21,7 +33,7 @@ describe('Database Connection Integration Test', () => {
   it('should be able to query system tables', async () => {
     try {
       // Querying pg_catalog to ensure we are talking to a real Postgres instance
-      const result = await sql`SELECT version();`;
+      const result = await neonSql`SELECT version();`;
       expect(result).toBeDefined();
       expect(result[0].version).toContain('PostgreSQL');
     } catch (error) {
