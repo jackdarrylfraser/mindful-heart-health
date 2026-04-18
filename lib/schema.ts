@@ -73,6 +73,31 @@ export const verification = pgTable(
   (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
 
+export const product = pgTable("product", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  priceCents: text("price_cents").notNull(), // Store price in cents as string for Stripe compatibility
+  stripeProductId: text("stripe_product_id").notNull(),
+  stripePriceId: text("stripe_price_id").notNull(),
+  type: text("type").notNull(), // 'recurring' or 'fixed'
+  interval: text("interval"), // e.g. 'month', 'year', 'day'
+  intervalCount: text("interval_count"), // e.g. '1', '3' (for 3 months)
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const purchase = pgTable("purchase", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  productId: text("product_id").notNull().references(() => product.id, { onDelete: "cascade" }),
+  stripeSessionId: text("stripe_session_id"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
+  accessStart: timestamp("access_start").notNull(),
+  accessEnd: timestamp("access_end").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
