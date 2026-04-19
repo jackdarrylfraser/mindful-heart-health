@@ -44,3 +44,6 @@ next-env.d.ts
 #search information for dev page
 _pagefind/
 package-lock.json
+
+
+dist/*

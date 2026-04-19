@@ -8,6 +8,13 @@
       "when": 1776437917102,
       "tag": "0000_sweet_marten_broadcloak",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1776546390817,
+      "tag": "0001_perfect_nehzno",
+      "breakpoints": true
     }
   ]
 }

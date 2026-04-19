@@ -1,0 +1,12 @@
+{
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "package.json": "package-lock.json, pnpm-lock.yaml, yarn.lock, tsconfig.json, next.config.*, tailwind.config.*, postcss.config.*, .eslintrc*, .prettier*, components.json, eslint.*, global.d.ts, drizzle.config*, bun.lock, next-env.d.ts",
+    ".env": ".env.local, .env.example, .env.production, .env.development",
+    "layout.tsx": "loading.tsx, error.tsx, not-found.tsx, layout.css",
+    "*.ts": "$(capture).test.ts",
+    "*.tsx": "$(capture).test.tsx",
+    ".gitignore": ".gitattributes"
+  }
+}

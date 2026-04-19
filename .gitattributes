@@ -1,6 +1,7 @@
 # 1. Ignore specific JS config files from stats
 postcss.config.mjs linguist-vendored
 eslint.config.mjs linguist-vendored
+dist/* linguist-vendored
 
 # 2. Ensure MDX is counted (sometimes GitHub ignores it or misclassifies it)
 *.mdx linguist-detectable
