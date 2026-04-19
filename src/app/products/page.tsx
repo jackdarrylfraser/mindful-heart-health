@@ -1,8 +1,9 @@
-import { drizzleClient } from "@/src/lib/database";
+import { getDrizzleClient } from "@/src/lib/database";
 import { product as productTable } from "@/src/lib/schema";
 import StripeCheckoutButton from "@/src/app/components/StripeCheckoutButton";
 
 async function getProducts() {
+	const drizzleClient = await getDrizzleClient();
 	return drizzleClient.select().from(productTable);
 }
 

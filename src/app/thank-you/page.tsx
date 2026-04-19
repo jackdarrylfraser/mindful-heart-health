@@ -58,14 +58,22 @@ export default function ThankYou() {
 
 	if (status === "complete") {
 		return (
-			<section id="success">
-				<p>
-					We appreciate your business! A confirmation email will be
-					sent to {customerEmail ?? "your email address"}. If you have
-					any questions, please email{" "}
-					<a href="mailto:orders@example.com">orders@example.com</a>.
-				</p>
-			</section>
+			<main className="max-w-xl mx-auto py-8">
+				<section id="success">
+					<h1 className="text-2xl font-bold mb-4">
+						Thank You for Your Purchase!
+					</h1>
+					<p>
+						We appreciate your business! A confirmation email will
+						be sent to {customerEmail ?? "your email address"}. If
+						you have any questions, please email{" "}
+						<a href="mailto:orders@example.com">
+							orders@example.com
+						</a>
+						.
+					</p>
+				</section>
+			</main>
 		);
 	}
 

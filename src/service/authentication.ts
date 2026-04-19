@@ -1,12 +1,12 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { drizzleClient } from "@/src/lib/database";
+import { getDrizzleClient } from "@/src/lib/database";
 import * as schema from "@/src/lib/schema";
 import { sendMagicLink } from "@/src/actions/send-email";
 import { magicLink } from "better-auth/plugins";
 
 export const authentication = betterAuth({
-	database: drizzleAdapter(drizzleClient, {
+	database: drizzleAdapter(await getDrizzleClient(), {
 		provider: "pg",
 		schema: schema,
 	}),

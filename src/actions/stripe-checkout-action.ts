@@ -1,6 +1,6 @@
 "use server";
-import { stripe } from "@/src/lib/stripe";
-import { drizzleClient } from "@/src/lib/database";
+import { getStripe } from "@/src/lib/stripe";
+import { getDrizzleClient } from "@/src/lib/database";
 import { product as productTable } from "@/src/lib/schema";
 import { eq } from "drizzle-orm";
 import { env } from "@/src/lib/env";
@@ -17,6 +17,8 @@ export async function createStripeCheckoutSession(
 	const userId = formData.get("userId") as string | undefined;
 	if (!productId) throw new Error("Missing productId");
 
+	const drizzleClient = await getDrizzleClient();
+
 	const [product] = await drizzleClient
 		.select()
 		.from(productTable)
@@ -30,6 +32,7 @@ export async function createStripeCheckoutSession(
 		);
 	}
 
+	const stripe = await getStripe();
 	const session = await stripe.checkout.sessions.create({
 		ui_mode: "embedded_page",
 		mode: product.type === "recurring" ? "subscription" : "payment",

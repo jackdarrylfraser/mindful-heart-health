@@ -3,7 +3,7 @@ import { env } from "@/src/lib/env";
 
 export default defineConfig({
 	dialect: "postgresql",
-	schema: "./lib/schema.ts",
+	schema: "./src/lib/schema.ts",
 	out: "./migration",
 	dbCredentials: {
 		url: env.DATABASE_URL!,

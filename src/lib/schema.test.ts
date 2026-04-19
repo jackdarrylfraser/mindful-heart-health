@@ -1,5 +1,6 @@
+"use server";
 import { describe, it, expect } from "bun:test";
-import { drizzleClient } from "@/src/lib/database"; // Ensure database module is imported to initialize connection
+import { getDrizzleClient } from "@/src/lib/database"; // Ensure database module is imported to initialize connection
 import { sql } from "drizzle-orm";
 
 describe("Better Auth Schema Integration", () => {
@@ -52,6 +53,7 @@ describe("Better Auth Schema Integration", () => {
 		it.each(columns)(
 			`DB Verification -- Table:'${tableName}' column: '%s'`,
 			async (columnName) => {
+				const drizzleClient = await getDrizzleClient();
 				const result = await drizzleClient.execute(sql`
         SELECT EXISTS (
           SELECT FROM information_schema.columns 
@@ -66,6 +68,7 @@ describe("Better Auth Schema Integration", () => {
 
 	it("Foreign Key Relationship Verification: Session & User", async () => {
 		// This checks that userId in the session table references the user table
+		const drizzleClient = await getDrizzleClient();
 		const result = await drizzleClient.execute(sql`
       SELECT count(*) as fk_count
       FROM information_schema.key_column_usage
@@ -79,6 +82,7 @@ describe("Better Auth Schema Integration", () => {
 	});
 
 	it("Foreign Key Relationship Verification: Account & User", async () => {
+		const drizzleClient = await getDrizzleClient();
 		const result = await drizzleClient.execute(sql`
       SELECT count(*) as fk_count
       FROM information_schema.key_column_usage

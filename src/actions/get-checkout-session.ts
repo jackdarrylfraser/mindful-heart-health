@@ -1,22 +1,50 @@
 "use server";
 
-import { stripe } from "@/src/lib/stripe";
+import { getStripe } from "@/src/lib/stripe";
 import { z } from "zod";
+import Stripe from "stripe";
 
 const GetCheckoutSessionSchema = z.object({
 	sessionId: z.string().min(1, "Session ID is required"),
 });
 
-export async function getCheckoutSession(sessionId: string) {
-	// Validate input
-	GetCheckoutSessionSchema.parse({ sessionId });
+export type CheckoutSessionResult = {
+	status: Stripe.Checkout.Session["status"] | null;
+	customerEmail: string | null;
+};
 
-	const session = await stripe.checkout.sessions.retrieve(sessionId, {
-		expand: ["line_items", "payment_intent"],
-	});
+/**
+ * Retrieves the Stripe checkout session details.
+ */
+export async function getCheckoutSession(
+	sessionId: string,
+): Promise<CheckoutSessionResult> {
+	try {
+		const parsed = GetCheckoutSessionSchema.parse({ sessionId });
+		const stripe = await getStripe();
 
-	return {
-		status: session.status,
-		customerEmail: session.customer_details?.email ?? null,
-	};
+		const session = await stripe.checkout.sessions.retrieve(
+			parsed.sessionId,
+			{
+				expand: ["line_items", "payment_intent"],
+			},
+		);
+
+		return {
+			status: session.status,
+			customerEmail: session.customer_details?.email ?? null,
+		};
+	} catch (error) {
+		if (error instanceof z.ZodError) {
+			throw new Error(
+				`Validation Error: ${error.issues.map((e) => e.message).join(", ")}`,
+			);
+		}
+		if (error instanceof Stripe.errors.StripeError) {
+			throw new Error(`Stripe API Error: ${error.message}`);
+		}
+		throw new Error(
+			"An unexpected error occurred while retrieving the session.",
+		);
+	}
 }

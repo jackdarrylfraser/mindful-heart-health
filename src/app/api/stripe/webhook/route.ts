@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { drizzleClient } from "@/src/lib/database";
+import { getDrizzleClient } from "@/src/lib/database";
 import {
 	purchase as purchaseTable,
 	product as productTable,
 	user as userTable,
 } from "@/src/lib/schema";
 import { eq } from "drizzle-orm";
-import { stripe } from "@/src/lib/stripe";
+import { getStripe } from "@/src/lib/stripe";
 import { z } from "zod";
 import { isEventProcessed, markEventProcessed } from "./idempotency";
 import { authentication } from "@/src/service/authentication";
@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
 	let event: Stripe.Event;
 
 	try {
+		const stripe = await getStripe();
 		event = stripe.webhooks.constructEvent(
 			Buffer.from(buf),
 			sig!,
@@ -70,6 +71,7 @@ export async function POST(req: NextRequest) {
 
 		// Guest-to-user upgrade: find or create user by email
 		if (!userId) {
+			const drizzleClient = await getDrizzleClient();
 			const [existing] = await drizzleClient
 				.select()
 				.from(userTable)
@@ -92,6 +94,7 @@ export async function POST(req: NextRequest) {
 		}
 
 		// Look up product for interval
+		const drizzleClient = await getDrizzleClient();
 		const [product] = await drizzleClient
 			.select()
 			.from(productTable)

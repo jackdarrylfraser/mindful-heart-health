@@ -12,6 +12,7 @@ export const env = createEnv({
 		STRIPE_WEBHOOK_SECRET: z
 			.string()
 			.min(1, "STRIPE_WEBHOOK_SECRET cannot be empty"),
+		BETTER_AUTH_URL: z.string().min(1, "BETTER_AUTH_URL cannot be empty"),
 	},
 	client: {
 		// These MUST start with NEXT_PUBLIC_
@@ -24,6 +25,7 @@ export const env = createEnv({
 	},
 	// This tells the library which variables to check in the runtime
 	runtimeEnv: {
+		BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
 		DATABASE_URL: process.env.DATABASE_URL,
 		RESEND_API_KEY: process.env.RESEND_API_KEY,
 		STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,

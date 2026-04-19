@@ -10,15 +10,9 @@ import { useSearchParams } from "next/navigation";
 import { getClientSecret } from "@/src/actions/get-client-secret";
 import { env } from "@/src/lib/env";
 
-if (!env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
-	throw new Error(
-		"NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not defined in environment variables",
-	);
-}
-
-const stripePromise = loadStripe(env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
-
 export default function Checkout() {
+	const stripePromise = loadStripe(env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+
 	const searchParams = useSearchParams();
 	const sessionId = searchParams.get("session_id");
 

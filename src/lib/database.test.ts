@@ -1,9 +1,10 @@
 import { describe, it, expect } from "bun:test";
-import { drizzleClient } from "@/src/lib/database"; // Ensure database module is imported to initialize connection
+import { getDrizzleClient } from "@/src/lib/database"; // Ensure database module is imported to initialize connection
 
 describe("Neon & Drizzle DB Integration Test", () => {
 	it("Connect & Query PG DB", async () => {
 		try {
+			const drizzleClient = await getDrizzleClient();
 			// Querying pg_catalog to ensure we are talking to a real Postgres instance
 			const result = await drizzleClient.execute(`SELECT version();`);
 			expect(result).toBeDefined();

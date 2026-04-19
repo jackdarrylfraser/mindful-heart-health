@@ -1,7 +1,7 @@
-import { drizzleClient } from "@/src/lib/database";
+import { getDrizzleClient } from "@/src/lib/database";
 import { cart as cartTable, product as productTable } from "@/src/lib/schema";
 import { eq, inArray } from "drizzle-orm";
-import { stripe } from "@/src/lib/stripe";
+import { getStripe } from "@/src/lib/stripe";
 import { env } from "@/src/lib/env";
 
 /**
@@ -18,6 +18,7 @@ export async function checkoutCart({
 	email: string;
 }): Promise<string> {
 	// 1. Get cart and products
+	const drizzleClient = await getDrizzleClient();
 	const [cart] = await drizzleClient
 		.select()
 		.from(cartTable)
@@ -42,6 +43,7 @@ export async function checkoutCart({
 	}));
 
 	// 4. Create Stripe Checkout Session (embedded)
+	const stripe = await getStripe();
 	const session = await stripe.checkout.sessions.create({
 		ui_mode: "embedded_page",
 		mode: products[0].type === "recurring" ? "subscription" : "payment",

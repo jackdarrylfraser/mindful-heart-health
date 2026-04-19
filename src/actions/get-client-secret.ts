@@ -1,6 +1,6 @@
 "use server";
 
-import { stripe } from "@/src/lib/stripe";
+import { getStripe } from "@/src/lib/stripe";
 import { z } from "zod";
 
 // Zod schema for input validation
@@ -20,6 +20,7 @@ export async function getClientSecret(sessionId: string) {
 
 	try {
 		// Retrieve the Checkout Session from Stripe
+		const stripe = await getStripe();
 		const session = await stripe.checkout.sessions.retrieve(sessionId);
 
 		if (!session.client_secret) {

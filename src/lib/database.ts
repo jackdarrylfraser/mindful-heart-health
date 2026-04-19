@@ -1,10 +1,13 @@
-import { drizzle } from "drizzle-orm/neon-http";
+import { drizzle, NeonHttpDatabase } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
 import { env } from "@/src/lib/env";
 
-if (!env.DATABASE_URL) {
-	throw new Error("DATABASE_URL is not defined in environment variables");
-}
+let _client: NeonHttpDatabase | undefined;
 
-export const neonClient = neon(env.DATABASE_URL);
-export const drizzleClient = drizzle(neonClient, {});
+export async function getDrizzleClient() {
+	if (!_client) {
+		const neonClient = neon(env.DATABASE_URL);
+		_client = drizzle(neonClient, {});
+	}
+	return _client;
+}
