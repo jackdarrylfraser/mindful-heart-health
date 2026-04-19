@@ -40,7 +40,7 @@ export async function createStripeCheckoutSession(
 			},
 		],
 		customer: userId || undefined,
-		return_url: `${env.NEXT_PUBLIC_BASE_URL}/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
+		return_url: `${env.NEXT_PUBLIC_BASE_URL}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
 		metadata: {
 			productId: productId,
 			userId: userId || "guest",

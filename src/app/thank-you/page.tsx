@@ -1,22 +1,59 @@
-import { redirect } from "next/navigation";
+"use client";
+import { useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { getCheckoutSession } from "@/src/actions/get-checkout-session";
 
-import { stripe } from "@/src/lib/stripe";
+export default function ThankYou() {
+	const searchParams = useSearchParams();
+	const router = useRouter();
+	const sessionId = searchParams.get("session_id");
 
-export default async function Return({ searchParams }) {
-	const { session_id } = await searchParams;
+	const [status, setStatus] = useState<string | null>(null);
+	const [customerEmail, setCustomerEmail] = useState<string | null>(null);
+	const [error, setError] = useState<string | null>(null);
 
-	if (!session_id)
-		throw new Error("Please provide a valid session_id (`cs_test_...`)");
+	useEffect(() => {
+		if (!sessionId) {
+			setError("Please provide a valid session_id (`cs_test_...`)");
+			return;
+		}
 
-	const {
-		status,
-		customer_details: { email: customerEmail },
-	} = await stripe.checkout.sessions.retrieve(session_id, {
-		expand: ["line_items", "payment_intent"],
-	});
+		let isMounted = true;
 
-	if (status === "open") {
-		return redirect("/");
+		async function fetchSession() {
+			try {
+				const sessionData = await getCheckoutSession(
+					sessionId as string,
+				);
+
+				if (!isMounted) return;
+
+				if (sessionData.status === "open") {
+					router.push("/products");
+					return;
+				}
+
+				setStatus(sessionData.status);
+				setCustomerEmail(sessionData.customerEmail);
+			} catch (err: any) {
+				if (isMounted)
+					setError(err.message || "Failed to load session details.");
+			}
+		}
+
+		fetchSession();
+
+		return () => {
+			isMounted = false;
+		};
+	}, [sessionId, router]);
+
+	if (error) {
+		return <div className="p-4 text-red-500">{error}</div>;
+	}
+
+	if (!status) {
+		return <div className="p-4">Loading order details...</div>;
 	}
 
 	if (status === "complete") {
@@ -24,11 +61,13 @@ export default async function Return({ searchParams }) {
 			<section id="success">
 				<p>
 					We appreciate your business! A confirmation email will be
-					sent to {customerEmail}. If you have any questions, please
-					email{" "}
+					sent to {customerEmail ?? "your email address"}. If you have
+					any questions, please email{" "}
+					<a href="mailto:orders@example.com">orders@example.com</a>.
 				</p>
-				<a href="mailto:orders@example.com">orders@example.com</a>.
 			</section>
 		);
 	}
+
+	return null;
 }
