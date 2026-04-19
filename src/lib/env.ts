@@ -9,7 +9,9 @@ export const env = createEnv({
 		STRIPE_SECRET_KEY: z
 			.string()
 			.min(1, "STRIPE_SECRET_KEY cannot be empty"),
-		STRIPE_WEBHOOK_SECRET,
+		STRIPE_WEBHOOK_SECRET: z
+			.string()
+			.min(1, "STRIPE_WEBHOOK_SECRET cannot be empty"),
 	},
 	client: {
 		// These MUST start with NEXT_PUBLIC_

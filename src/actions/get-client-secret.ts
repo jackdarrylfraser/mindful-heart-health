@@ -1,3 +1,5 @@
+"use server";
+
 import { stripe } from "@/src/lib/stripe";
 import { z } from "zod";
 
@@ -12,9 +14,9 @@ const GetClientSecretSchema = z.object({
  * @param sessionId - The ID of the Stripe Checkout Session.
  * @returns The client secret for the Stripe Checkout Session.
  */
-export async function getClientSecret(input: unknown) {
+export async function getClientSecret(sessionId: string) {
 	// Validate input
-	const { sessionId } = GetClientSecretSchema.parse(input);
+	GetClientSecretSchema.parse({ sessionId });
 
 	try {
 		// Retrieve the Checkout Session from Stripe
