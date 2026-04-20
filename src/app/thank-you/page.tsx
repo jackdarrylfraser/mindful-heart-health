@@ -1,7 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { getCheckoutSession } from "@/src/actions/get-checkout-session";
+import { getCheckoutSession } from "@/src/actions/checkout";
 
 export default function ThankYou() {
 	const searchParams = useSearchParams();

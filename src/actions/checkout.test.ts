@@ -1,5 +1,5 @@
 import { describe, expect, it, mock, beforeEach } from "bun:test";
-import { getCheckoutSession } from "./get-checkout-session";
+import { getCheckoutSession } from "./checkout";
 
 // Create the mock stripe instance
 const mockStripe = {

@@ -1,4 +1,4 @@
-import { getStripe } from "@/src/lib/stripe";
+import { getStripe } from "@/src/lib/payments";
 import { getDrizzleClient } from "@/src/lib/database";
 import { product as productTable } from "@/src/lib/schema";
 

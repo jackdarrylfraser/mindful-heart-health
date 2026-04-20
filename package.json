@@ -21,6 +21,7 @@
 		"@stripe/stripe-js": "^9.2.0",
 		"@t3-oss/env-nextjs": "^0.13.11",
 		"@types/mdx": "^2.0.13",
+		"@upstash/redis": "^1.37.0",
 		"better-auth": "^1.6.5",
 		"drizzle-orm": "^0.45.2",
 		"drizzle-seed": "^0.3.1",

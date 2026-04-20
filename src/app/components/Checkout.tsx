@@ -1,18 +1,19 @@
 "use client";
 
-import {
-	EmbeddedCheckout,
-	EmbeddedCheckoutProvider,
-} from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
+import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+	EmbeddedCheckoutProvider,
+	EmbeddedCheckout,
+} from "@stripe/react-stripe-js";
+import { getClientSecret } from "@/src/actions/checkout";
 
-import { getClientSecret } from "@/src/actions/get-client-secret";
-import { env } from "@/src/lib/env";
+const stripePromise = loadStripe(
+	process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string,
+);
 
 export default function Checkout() {
-	const stripePromise = loadStripe(env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
-
 	const searchParams = useSearchParams();
 	const sessionId = searchParams.get("session_id");
 
