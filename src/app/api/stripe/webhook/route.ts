@@ -1,30 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { drizzleClient } from "@/src/lib/database";
+import { eq } from "drizzle-orm";
+import { getDrizzleClient } from "@/src/lib/database";
 import {
 	purchase as purchaseTable,
 	product as productTable,
-	user as userTable,
 } from "@/src/lib/schema";
-import { eq } from "drizzle-orm";
-import { stripe } from "@/src/lib/stripe";
-import { z } from "zod";
-import { isEventProcessed, markEventProcessed } from "./idempotency";
-import { authentication } from "@/src/service/authentication";
-import { headers } from "next/headers";
 import { env } from "@/src/lib/env";
+import { trackEvent } from "@/src/lib/analytics";
 
-const sessionSchema = z.object({
-	id: z.string(),
-	customer_email: z.string().email().optional(),
-	metadata: z
-		.object({
-			userId: z.string().optional(),
-			productId: z.string().optional(),
-		})
-		.optional(),
-	subscription: z.string().optional(),
-	payment_intent: z.string().optional(),
+// 1. Initialize Stripe
+const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
+	apiVersion: "2026-03-25.dahlia",
 });
 
 export async function POST(req: NextRequest) {
@@ -45,96 +32,44 @@ export async function POST(req: NextRequest) {
 		);
 	}
 
-	// Idempotency check
-	if (await isEventProcessed(event.id)) {
-		return NextResponse.json({ received: true, idempotent: true });
-	}
-
 	if (event.type === "checkout.session.completed") {
-		const session = sessionSchema.safeParse(event.data.object);
-		if (!session.success) {
-			return NextResponse.json(
-				{ error: "Invalid session payload" },
+		const checkoutSession = event.data.object as Stripe.Checkout.Session;
+
+		if (!checkoutSession.client_reference_id) {
+			console.error("No client_reference_id found in session");
+			return Response.json({ error: "Missing user ID" }, { status: 400 });
+		}
+
+		// Extract metadata we attached during checkout
+		const productId = checkoutSession.metadata?.productId;
+
+		if (!productId) {
+			console.error("No productId found in metadata");
+			return Response.json(
+				{ error: "Missing product metadata" },
 				{ status: 400 },
 			);
 		}
-		const s = session.data;
-		let userId = s.metadata?.userId;
-		const productId = s.metadata?.productId;
-		const email = s.customer_email;
-		if (!productId || !email)
-			return NextResponse.json(
-				{ error: "Missing productId or email" },
-				{ status: 400 },
-			);
 
-		// Guest-to-user upgrade: find or create user by email
-		if (!userId) {
-			const [existing] = await drizzleClient
-				.select()
-				.from(userTable)
-				.where(eq(userTable.email, email));
-			if (existing) {
-				userId = existing.id;
-			} else {
-				await authentication.api.signInMagicLink({
-					body: { email },
-					headers: await headers(),
-				});
-
-				const [existing] = await drizzleClient
-					.select()
-					.from(userTable)
-					.where(eq(userTable.email, email));
-
-				userId = existing.id;
-			}
-		}
-
-		// Look up product for interval
-		const [product] = await drizzleClient
-			.select()
-			.from(productTable)
-			.where(eq(productTable.id, productId));
-		if (!product)
-			return NextResponse.json(
-				{ error: "Product not found" },
-				{ status: 404 },
-			);
-
-		// Calculate access window
-		const now = new Date();
-		let accessEnd = new Date(now);
-		const interval = product.interval || "month";
-		const intervalCount = parseInt(product.intervalCount || "1", 10);
-		if (product.type === "recurring" || product.type === "fixed") {
-			if (interval === "month")
-				accessEnd.setMonth(accessEnd.getMonth() + intervalCount);
-			else if (interval === "year")
-				accessEnd.setFullYear(accessEnd.getFullYear() + intervalCount);
-			else if (interval === "day")
-				accessEnd.setDate(accessEnd.getDate() + intervalCount);
-		}
-
-		// Insert purchase
+		// Insert purchase into the database
+		const drizzleClient = await getDrizzleClient();
 		await drizzleClient.insert(purchaseTable).values({
-			id: s.id,
-			userId,
+			id: crypto.randomUUID(),
+			userId: checkoutSession.client_reference_id,
 			productId,
-			stripeSessionId: s.id,
-			stripeSubscriptionId: s.subscription,
-			stripePaymentIntentId: s.payment_intent,
-			accessStart: now,
-			accessEnd,
-			createdAt: now,
+			stripeSessionId: checkoutSession.id,
+			accessEnd: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year access
 		});
 
-		await markEventProcessed(event.id, event.type);
-		return NextResponse.json({ received: true });
+		await trackEvent("Purchase Completed", {
+			productId,
+			valueCents: checkoutSession.amount_total || 0,
+		});
+
+		console.log(
+			`Successfully processed purchase for user ${checkoutSession.client_reference_id}`,
+		);
 	}
 
-	// Optionally handle other event types (e.g., invoice.paid for renewals)
-
-	await markEventProcessed(event.id, event.type);
 	return NextResponse.json({ received: true });
 }

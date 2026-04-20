@@ -1,0 +1,1 @@
+ALTER TABLE "lead" ADD COLUMN "last_name" text;

@@ -45,5 +45,4 @@ next-env.d.ts
 _pagefind/
 package-lock.json
 
-
 dist/*

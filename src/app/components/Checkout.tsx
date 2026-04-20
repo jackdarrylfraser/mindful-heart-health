@@ -1,22 +1,17 @@
 "use client";
 
-import {
-	EmbeddedCheckout,
-	EmbeddedCheckoutProvider,
-} from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
+import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+	EmbeddedCheckoutProvider,
+	EmbeddedCheckout,
+} from "@stripe/react-stripe-js";
+import { getClientSecret } from "@/src/actions/checkout";
 
-import { getClientSecret } from "@/src/actions/get-client-secret";
-import { env } from "@/src/lib/env";
-
-if (!env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
-	throw new Error(
-		"NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not defined in environment variables",
-	);
-}
-
-const stripePromise = loadStripe(env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+const stripePromise = loadStripe(
+	process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string,
+);
 
 export default function Checkout() {
 	const searchParams = useSearchParams();

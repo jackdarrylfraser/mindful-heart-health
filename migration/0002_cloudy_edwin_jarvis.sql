@@ -1,0 +1,1 @@
+CREATE INDEX "purchase_userId_idx" ON "purchase" USING btree ("user_id");

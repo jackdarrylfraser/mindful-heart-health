@@ -3,15 +3,15 @@
 import { useTransition } from "react";
 import { createStripeCheckoutSession } from "@/src/actions/checkout";
 
-interface StripeCheckoutButtonProps {
+interface CheckoutButtonProps {
 	productId: string;
 	userId: string;
 }
 
-export default function StripeCheckoutButton({
+export default function CheckoutButton({
 	productId,
 	userId,
-}: StripeCheckoutButtonProps) {
+}: CheckoutButtonProps) {
 	const [pending, startTransition] = useTransition();
 
 	async function action(formData: FormData) {

@@ -87,28 +87,35 @@ export const product = pgTable("product", {
 	isStripeSynced: boolean("is_stripe_synced").default(false).notNull(),
 });
 
-export const purchase = pgTable("purchase", {
-	id: text("id").primaryKey(),
-	userId: text("user_id")
-		.notNull()
-		.references(() => user.id, { onDelete: "cascade" }),
-	productId: text("product_id")
-		.notNull()
-		.references(() => product.id, { onDelete: "cascade" }),
-	stripeSessionId: text("stripe_session_id"),
-	stripeSubscriptionId: text("stripe_subscription_id"),
-	stripePaymentIntentId: text("stripe_payment_intent_id"),
-	accessStart: timestamp("access_start").notNull(),
-	accessEnd: timestamp("access_end").notNull(),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+export const purchase = pgTable(
+	"purchase",
+	{
+		id: text("id").primaryKey(),
+		userId: text("user_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+		productId: text("product_id")
+			.notNull()
+			.references(() => product.id, { onDelete: "cascade" }),
+		stripeSessionId: text("stripe_session_id"),
+		accessEnd: timestamp("access_end").notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+	},
+	(table) => [
+		index("purchase_userId_idx").on(table.userId),
+		index("purchase_productId_idx").on(table.productId),
+	],
+);
 
-export const cart = pgTable("cart", {
+export const lead = pgTable("lead", {
 	id: text("id").primaryKey(),
-	userId: text("user_id"), // nullable for guests
-	productIds: text("product_ids").array().notNull(),
+	email: text("email").notNull().unique(),
+	firstName: text("first_name"),
+	lastName: text("last_name"),
+	source: text("source").notNull(), // e.g., 'pdf-download', 'newsletter', 'waitlist'
+	convertedToUser: boolean("converted_to_user").default(false).notNull(),
+	userId: text("user_id").references(() => user.id, { onDelete: "set null" }), // Link if they sign up later
 	createdAt: timestamp("created_at").defaultNow().notNull(),
-	updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 export const userRelations = relations(user, ({ many }) => ({

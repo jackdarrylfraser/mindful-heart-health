@@ -1,5 +1,5 @@
-import { stripe } from "@/src/lib/stripe";
-import { drizzleClient } from "@/src/lib/database";
+import { getStripe } from "@/src/lib/payments";
+import { getDrizzleClient } from "@/src/lib/database";
 import { product as productTable } from "@/src/lib/schema";
 
 /**
@@ -9,6 +9,7 @@ import { product as productTable } from "@/src/lib/schema";
  * - Sets isStripeSynced = true for all synced products.
  */
 export async function syncStripeProductsToDb(): Promise<void> {
+	const stripe = await getStripe();
 	const products = await stripe.products.list({ active: true, limit: 100 });
 	const prices = await stripe.prices.list({ active: true, limit: 100 });
 
@@ -17,6 +18,8 @@ export async function syncStripeProductsToDb(): Promise<void> {
 			(p) => p.product === product.id && p.active,
 		);
 		if (!price) continue;
+
+		const drizzleClient = await getDrizzleClient();
 		await drizzleClient
 			.insert(productTable)
 			.values({
