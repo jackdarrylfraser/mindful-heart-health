@@ -1,4 +1,4 @@
-"use server";
+import "server-only";
 
 import { drizzle, NeonHttpDatabase } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
